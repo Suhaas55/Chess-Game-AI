@@ -376,57 +376,57 @@ class AI:
                 tile = gametiles[y][x]
                 if tile.pieceonTile:
                     piece = tile.pieceonTile.tostring()
-                    piece_count += 1  # Incrementing piece count
+                    piece_count=piece_count+1  # Incrementing piece count
                     #checking if actuually a piece is there on tile but overall like starter code
-                    if piece == 'P': 
-                        value -= 100 + p[y][x]
-                    elif piece == 'N': 
-                        value -= 350 + n[y][x]
-                    elif piece == 'B': 
-                        value -= 350 + b[y][x]
-                    elif piece == 'R': 
-                        value -= 525 + r[y][x]
-                    elif piece == 'Q': 
-                        value -= 1000 + q[y][x]
-                    elif piece == 'K': 
-                        value -= 10000 + k[y][x]
-                    elif piece == 'p': 
-                        value += 100 + p[y][x]
-                    elif piece == 'n': 
-                        value += 350 + n[y][x]
-                    elif piece == 'b': 
-                        value += 350 + b[y][x]
-                    elif piece == 'r': 
-                        value += 525 + r[y][x]
-                    elif piece == 'q': 
-                        value += 1000 + q[y][x]
+                    if piece =='P': 
+                        value -=100 + p[y][x]
+                    elif piece =='N': 
+                        value -=350 + n[y][x]
+                    elif piece =='B': 
+                        value -=350 + b[y][x]
+                    elif piece =='R': 
+                        value -=525 + r[y][x]
+                    elif piece =='Q': 
+                        value -=1000 + q[y][x]
+                    elif piece =='K': 
+                        value -=10000 + k[y][x]
+                    elif piece =='p': 
+                        value +=100 + p[y][x]
+                    elif piece =='n': 
+                        value +=350 + n[y][x]
+                    elif piece =='b': 
+                        value +=350 + b[y][x]
+                    elif piece =='r': 
+                        value +=525 + r[y][x]
+                    elif piece =='q': 
+                        value +=1000 + q[y][x]
                     elif piece == 'k': 
-                        value += 10000 + k[y][x]
+                        value +=10000 + k[y][x]
 
                     # Central control bonus--because control over the center allows for greater influence over the board and more flexible piece placement and movement
                     if (x, y) in central_squares:
-                        value += central_control_bonus if piece.islower() else -central_control_bonus
+                        value +=central_control_bonus * (1 if piece.islower() else -1)
                     
                     #PAWNS ONLY
-                    if piece.lower() == 'p':
-                        advancement_bonus = (y if piece.islower() else 7 - y) * 10 #pushing for pawn advancement n promotion
+                    if piece.lower() =='p':
+                        advancement_bonus =(y if piece == piece.lower() else 7 - y) * 10 #pushing for pawn advancement n promotion
                         value += advancement_bonus if piece.islower() else -advancement_bonus
                         #penalty type for the isolated pawns--x-1 n x+1 used for adjacent tiles
-                        if (x == 0 or not gametiles[y][x-1].pieceonTile or gametiles[y][x-1].pieceonTile.tostring().lower() != 'p') and \
-                            (x == 7 or not gametiles[y][x+1].pieceonTile or gametiles[y][x+1].pieceonTile.tostring().lower() != 'p'):
-                            value -= 50 if piece.islower() else 50
+                        if (x ==0 or not gametiles[y][x-1].pieceonTile or gametiles[y][x-1].pieceonTile.tostring().lower() !='p') and \
+                            (x ==7 or not gametiles[y][x+1].pieceonTile or gametiles[y][x+1].pieceonTile.tostring().lower() !='p'):
+                            value -=50 if piece.islower() else 50
                         #for pawns on the same horizontal
                         for i in range(y+1, 8):
-                            if gametiles[i][x].pieceonTile and gametiles[i][x].pieceonTile.tostring().lower() == 'p':
-                                value -= 30 if piece.islower() else 50
+                            if gametiles[i][x].pieceonTile and gametiles[i][x].pieceonTile.tostring().lower()=='p':
+                                value -=30 if piece.islower() else 50
                                 break
 
                     #For King safety--idea credit for ta for pawn too above
-                    if piece.lower() == 'k':
+                    if piece.lower() =='k':
                         # Checkingg if there are pawns in front of the king for protection
                         for dy in [-1, 0, 1]:
-                            if y+dy in range(8) and (not gametiles[y+dy][x].pieceonTile or gametiles[y+dy][x].pieceonTile.tostring().lower() != 'p'):
-                                value -= 100 if piece.islower() else 100
+                            if 0 <= y+dy < 8 and (not gametiles[y+dy][x].pieceonTile or gametiles[y+dy][x].pieceonTile.tostring().lower() !='p'):
+                                value -=100 if piece.islower() else 100
 
         return value
     
