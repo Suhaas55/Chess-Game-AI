@@ -250,7 +250,7 @@ class AI:
         return arr
 
 
-    def calculateb(self,gametiles):
+    """def calculateb(self,gametiles):
         value=0
         for x in range(8):
             for y in range(8):
@@ -290,7 +290,146 @@ class AI:
                     if gametiles[y][x].pieceonTile.tostring()=='k':
                         value=value+10000
 
+        return value"""
+    
+
+    def calculateb(self,gametiles):
+        # these tables basically define positional values for each piece type where the higher values indicate better positions for that particular piece
+
+        #pawns are valuable in the center and when advancing,adn also made row 6 negative for pawns movement who are in front of king
+        p = [
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [5, 5, 5, 5, 5, 5, 5, 5],
+            [1, 1, 2, 3, 3, 2, 1, 1],
+            [0.5, 0.5, 1, 2.5, 2.5, 1, 0.5, 0.5],
+            [0, 0, 0, 2, 2, 0, 0, 0],
+            [0.5, -0.5, -1, 0, 0, -1, -0.5, 0.5],
+            [0.5, 1, 1, -2, -2, 1, 1, 0.5],
+            [0, 0, 0, 0, 0, 0, 0, 0]
+        ]
+        #knights better near center n poor at edges
+        n = [
+            [-5, -4, -3, -3, -3, -3, -4, -5],
+            [-4, -2, 0, 0, 0, 0, -2, -4],
+            [-3, 0, 1, 1.5, 1.5, 1, 0, -3],
+            [-3, 0.5, 1.5, 2, 2, 1.5, 0.5, -3],
+            [-3, 0, 1.5, 2, 2, 1.5, 0, -3],
+            [-3, 0.5, 1, 1.5, 1.5, 1, 0.5, -3],
+            [-4, -2, 0, 0.5, 0.5, 0, -2, -4],
+            [-5, -4, -3, -3, -3, -3, -4, -5]
+        ]
+        #bishops netter in center basically for good diagonal control
+        b = [
+            [-2, -1, -1, -1, -1, -1, -1, -2],
+            [-1, 0, 0, 0, 0, 0, 0, -1],
+            [-1, 0, 0.5, 1, 1, 0.5, 0, -1],
+            [-1, 0.5, 0.5, 1, 1, 0.5, 0.5, -1],
+            [-1, 0, 1, 1, 1, 1, 0, -1],
+            [-1, 1, 1, 1, 1, 1, 1, -1],
+            [-1, 0.5, 0, 0, 0, 0, 0.5, -1],
+            [-2, -1, -1, -1, -1, -1, -1, -2]
+        ]
+        #rook - 0 value for most positions n small penalty for corners
+        r = [
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0.5, 1, 1, 1, 1, 1, 1, 0.5],
+            [-0.5, 0, 0, 0, 0, 0, 0, -0.5],
+            [-0.5, 0, 0, 0, 0, 0, 0, -0.5],
+            [-0.5, 0, 0, 0, 0, 0, 0, -0.5],
+            [-0.5, 0, 0, 0, 0, 0, 0, -0.5],
+            [-0.5, 0, 0, 0, 0, 0, 0, -0.5],
+            [0, 0, 0, 0.5, 0.5, 0, 0, 0]
+        ]
+        #queens from central positions with safety,edghe bad overall kind of similar in all because nothing is too good and queen can be vulnerable if too free
+        q = [
+            [-2, -1, -1, -0.5, -0.5, -1, -1, -2],
+            [-1, 0, 0, 0, 0, 0, 0, -1],
+            [-1, 0, 0.5, 0.5, 0.5, 0.5, 0, -1],
+            [-0.5, 0, 0.5, 0.5, 0.5, 0.5, 0, -0.5],
+            [0, 0, 0.5, 0.5, 0.5, 0.5, 0, -0.5],
+            [-1, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, -1],
+            [-1, 0, 0.5, 0, 0, 0, 0, -1],
+            [-2, -1, -1, -0.5, -0.5, -1, -1, -2]
+        ]
+        #center/opposite side position really bad so neg values corners/edges like castles good, better to staty behind pawn
+        k = [
+            [-3, -4, -4, -5, -5, -4, -4, -3],
+            [-3, -4, -4, -5, -5, -4, -4, -3],
+            [-3, -4, -4, -5, -5, -4, -4, -3],
+            [-3, -4, -4, -5, -5, -4, -4, -3],
+            [-2, -3, -3, -4, -4, -3, -3, -2],
+            [-1, -2, -2, -2, -2, -2, -2, -1],
+            [2, 2, 0, 0, 0, 0, 2, 2],
+            [2, 3, 1, 0, 0, 1, 3, 2]
+        ]
+
+        
+        value=0
+        piece_count=0 #fro counting the total number of pieces for detectingg endgame liek how close
+
+        central_squares = [(3, 3), (3, 4), (4, 3), (4, 4)]
+        central_control_bonus = 20  # think the value shoudl be optimal based on testing
+
+        #going through entire board 64
+        for x in range(8):
+            for y in range(8):
+                tile = gametiles[y][x]
+                if tile.pieceonTile:
+                    piece = tile.pieceonTile.tostring()
+                    piece_count += 1  # Incrementing piece count
+                    #checking if actuually a piece is there on tile but overall like starter code
+                    if piece == 'P': 
+                        value -= 100 + p[y][x]
+                    elif piece == 'N': 
+                        value -= 350 + n[y][x]
+                    elif piece == 'B': 
+                        value -= 350 + b[y][x]
+                    elif piece == 'R': 
+                        value -= 525 + r[y][x]
+                    elif piece == 'Q': 
+                        value -= 1000 + q[y][x]
+                    elif piece == 'K': 
+                        value -= 10000 + k[y][x]
+                    elif piece == 'p': 
+                        value += 100 + p[y][x]
+                    elif piece == 'n': 
+                        value += 350 + n[y][x]
+                    elif piece == 'b': 
+                        value += 350 + b[y][x]
+                    elif piece == 'r': 
+                        value += 525 + r[y][x]
+                    elif piece == 'q': 
+                        value += 1000 + q[y][x]
+                    elif piece == 'k': 
+                        value += 10000 + k[y][x]
+
+                    # Central control bonus--because control over the center allows for greater influence over the board and more flexible piece placement and movement
+                    if (x, y) in central_squares:
+                        value += central_control_bonus if piece.islower() else -central_control_bonus
+                    
+                    #PAWNS ONLY
+                    if piece.lower() == 'p':
+                        advancement_bonus = (y if piece.islower() else 7 - y) * 10 #pushing for pawn advancement n promotion
+                        value += advancement_bonus if piece.islower() else -advancement_bonus
+                        #penalty type for the isolated pawns--x-1 n x+1 used for adjacent tiles
+                        if (x == 0 or not gametiles[y][x-1].pieceonTile or gametiles[y][x-1].pieceonTile.tostring().lower() != 'p') and \
+                            (x == 7 or not gametiles[y][x+1].pieceonTile or gametiles[y][x+1].pieceonTile.tostring().lower() != 'p'):
+                            value -= 50 if piece.islower() else 50
+                        #for pawns on the same horizontal
+                        for i in range(y+1, 8):
+                            if gametiles[i][x].pieceonTile and gametiles[i][x].pieceonTile.tostring().lower() == 'p':
+                                value -= 30 if piece.islower() else 50
+                                break
+
+                    #For King safety--idea credit for ta for pawn too above
+                    if piece.lower() == 'k':
+                        # Checkingg if there are pawns in front of the king for protection
+                        for dy in [-1, 0, 1]:
+                            if y+dy in range(8) and (not gametiles[y+dy][x].pieceonTile or gametiles[y+dy][x].pieceonTile.tostring().lower() != 'p'):
+                                value -= 100 if piece.islower() else 100
+
         return value
+    
 
 
     def move(self,gametiles,y,x,n,m):
