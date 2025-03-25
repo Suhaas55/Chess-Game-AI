@@ -296,79 +296,77 @@ class AI:
     def calculateb(self,gametiles):
         # these tables basically define positional values for each piece type where the higher values indicate better positions for that particular piece
 
+        #CHECK VALUES AGAIN FOR PIECE TABLE-READ ARTICLES ON BEST POSITIONS FOR EACH PIECE,ETC- DONT FORGET TO RECHECK FOR OPTIMAL TILES!!!-->delete comment later
+
         #pawns are valuable in the center and when advancing,adn also made row 6 negative for pawns movement who are in front of king
         p = [
             [0, 0, 0, 0, 0, 0, 0, 0],
-            [5, 5, 5, 5, 5, 5, 5, 5],
-            [1, 1, 2, 3, 3, 2, 1, 1],
-            [0.5, 0.5, 1, 2.5, 2.5, 1, 0.5, 0.5],
-            [0, 0, 0, 2, 2, 0, 0, 0],
-            [0.5, -0.5, -1, 0, 0, -1, -0.5, 0.5],
-            [0.5, 1, 1, -2, -2, 1, 1, 0.5],
+            [9, 9, 9, 10, 10, 9, 9, 9],
+            [2, 2, 4, 7, 7, 4, 2, 2],
+            [1, 1, 2, 5.5, 5.5, 2, 1, 1],
+            [0, 0, 0, 5, 5, 0, 0, 0],
+            [1, -1, -2, 0, 0, -2, -1, 1],
+            [1, 2, 2, -4, -4, 2, 2, 1],
             [0, 0, 0, 0, 0, 0, 0, 0]
         ]
         #knights better near center n poor at edges
         n = [
-            [-5, -4, -3, -3, -3, -3, -4, -5],
-            [-4, -2, 0, 0, 0, 0, -2, -4],
-            [-3, 0, 1, 1.5, 1.5, 1, 0, -3],
-            [-3, 0.5, 1.5, 2, 2, 1.5, 0.5, -3],
-            [-3, 0, 1.5, 2, 2, 1.5, 0, -3],
-            [-3, 0.5, 1, 1.5, 1.5, 1, 0.5, -3],
-            [-4, -2, 0, 0.5, 0.5, 0, -2, -4],
-            [-5, -4, -3, -3, -3, -3, -4, -5]
+            [-10, -8, -6, -6, -6, -6, -8, -10],
+            [-8, -4, 0, 0, 0, 0, -4, -8],
+            [-6, 0, 2, 3, 3, 2, 0, -6],
+            [-6, 1, 3, 4, 4, 3, 1, -6],
+            [-6, 0, 3, 4, 4, 3, 0, -6],
+            [-6, 1, 2, 3, 3, 2, 1, -6],
+            [-9, -4, 0, 1, 1, 0, -4, -9],
+            [-11, -8, -6, -6, -6, -6, -8, -11]
         ]
         #bishops netter in center basically for good diagonal control
         b = [
-            [-2, -1, -1, -1, -1, -1, -1, -2],
-            [-1, 0, 0, 0, 0, 0, 0, -1],
-            [-1, 0, 0.5, 1, 1, 0.5, 0, -1],
-            [-1, 0.5, 0.5, 1, 1, 0.5, 0.5, -1],
-            [-1, 0, 1, 1, 1, 1, 0, -1],
-            [-1, 1, 1, 1, 1, 1, 1, -1],
-            [-1, 0.5, 0, 0, 0, 0, 0.5, -1],
-            [-2, -1, -1, -1, -1, -1, -1, -2]
+            [-4, -2, -2, -2, -2, -2, -2, -4],
+            [-2, 0, 0, 0, 0, 0, 0, -2],
+            [-2, 0, 1, 2, 2, 1, 0, -2],
+            [-2, 1, 1, 2, 2, 1, 1, -2],
+            [-2, 0, 2, 2, 2, 2, 0, -2],
+            [-2, 2.5, 2, 2, 2, 2, 2.5, -2],
+            [-2, 1, 0, 0, 0, 0, 1, -2],
+            [-4, -2, -2, -2, -2, -2, -2, -4]
         ]
         #rook - 0 value for most positions n small penalty for corners
         r = [
             [0, 0, 0, 0, 0, 0, 0, 0],
-            [0.5, 1, 1, 1, 1, 1, 1, 0.5],
-            [-0.5, 0, 0, 0, 0, 0, 0, -0.5],
-            [-0.5, 0, 0, 0, 0, 0, 0, -0.5],
-            [-0.5, 0, 0, 0, 0, 0, 0, -0.5],
-            [-0.5, 0, 0, 0, 0, 0, 0, -0.5],
-            [-0.5, 0, 0, 0, 0, 0, 0, -0.5],
-            [0, 0, 0, 0.5, 0.5, 0, 0, 0]
+            [1, 2, 2, 2, 2, 2, 2, 1],
+            [-1, 0, 0, 0, 0, 0, 0, -1],
+            [-1, 0, 0, 0, 0, 0, 0, -1],
+            [-1, 0, 0, 0, 0, 0, 0, -1],
+            [-1, 0, 0, 0, 0, 0, 0, -1],
+            [1, 1, 1, 1, 1, 1, 1, 1],
+            [0, 0, 0, 1, 1, 0, 0, 0]
         ]
         #queens from central positions with safety,edghe bad overall kind of similar in all because nothing is too good and queen can be vulnerable if too free
         q = [
-            [-2, -1, -1, -0.5, -0.5, -1, -1, -2],
-            [-1, 0, 0, 0, 0, 0, 0, -1],
-            [-1, 0, 0.5, 0.5, 0.5, 0.5, 0, -1],
-            [-0.5, 0, 0.5, 0.5, 0.5, 0.5, 0, -0.5],
-            [0, 0, 0.5, 0.5, 0.5, 0.5, 0, -0.5],
-            [-1, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, -1],
-            [-1, 0, 0.5, 0, 0, 0, 0, -1],
-            [-2, -1, -1, -0.5, -0.5, -1, -1, -2]
+            [-4, -2, -2, -1, -1, -2, -2, -4],
+            [-2, 0, 0, 0, 0, 0, 0, -2],
+            [-2, 0, 1, 1, 1, 1, 0, -2],
+            [-1, 0, 1, 1.5, 1.5, 1, 0, -1],
+            [0, 0, 1, 1.5, 1.5, 1, 0, -1],
+            [-2, 1, 1, 1, 1, 1, 1, -2],
+            [-2, 0, 1, 0, 0, 0, 0, -2],
+            [-4, -2, -2, -1, -1, -2, -2, -4]
         ]
         #center/opposite side position really bad so neg values corners/edges like castles good, better to staty behind pawn
         k = [
-            [-3, -4, -4, -5, -5, -4, -4, -3],
-            [-3, -4, -4, -5, -5, -4, -4, -3],
-            [-3, -4, -4, -5, -5, -4, -4, -3],
-            [-3, -4, -4, -5, -5, -4, -4, -3],
-            [-2, -3, -3, -4, -4, -3, -3, -2],
-            [-1, -2, -2, -2, -2, -2, -2, -1],
-            [2, 2, 0, 0, 0, 0, 2, 2],
-            [2, 3, 1, 0, 0, 1, 3, 2]
+            [-6, -8, -8, -10, -10, -8, -8, -6],
+            [-6, -8, -8, -10, -10, -8, -8, -6],
+            [-6, -8, -8, -11, -11, -8, -8, -6],
+            [-6, -8, -8, -10, -10, -8, -8, -6],
+            [-4, -6, -6, -8, -8, -6, -6, -4],
+            [-2, -4, -4, -4, -4, -4, -4, -2],
+            [4, 4, 0, 0, 0, 0, 4, 4],
+            [5, 6, 2, 0, 0, 2, 6, 5]
         ]
 
         
         value=0
-        piece_count=0 #fro counting the total number of pieces for detectingg endgame liek how close
-
-        central_squares = [(3, 3), (3, 4), (4, 3), (4, 4)]
-        central_control_bonus = 20  # think the value shoudl be optimal based on testing
 
         #going through entire board 64
         for x in range(8):
@@ -376,7 +374,6 @@ class AI:
                 tile = gametiles[y][x]
                 if tile.pieceonTile:
                     piece = tile.pieceonTile.tostring()
-                    piece_count=piece_count+1  # Incrementing piece count
                     #checking if actuually a piece is there on tile but overall like starter code
                     if piece =='P': 
                         value -=100 + p[y][x]
@@ -402,19 +399,11 @@ class AI:
                         value +=1000 + q[y][x]
                     elif piece == 'k': 
                         value +=10000 + k[y][x]
-
-                    # Central control bonus--because control over the center allows for greater influence over the board and more flexible piece placement and movement
-                    if (x, y) in central_squares:
-                        value +=central_control_bonus * (1 if piece.islower() else -1)
                     
                     #PAWNS ONLY
                     if piece.lower() =='p':
-                        advancement_bonus =(y if piece == piece.lower() else 7 - y) * 10 #pushing for pawn advancement n promotion
+                        advancement_bonus = (y if piece == piece.lower() else 7 - y) * (8 - abs(x - 3.5))   #pushing for pawn advancement n promotion
                         value += advancement_bonus if piece.islower() else -advancement_bonus
-                        #penalty type for the isolated pawns--x-1 n x+1 used for adjacent tiles
-                        if (x ==0 or not gametiles[y][x-1].pieceonTile or gametiles[y][x-1].pieceonTile.tostring().lower() !='p') and \
-                            (x ==7 or not gametiles[y][x+1].pieceonTile or gametiles[y][x+1].pieceonTile.tostring().lower() !='p'):
-                            value -=50 if piece.islower() else 50
                         #for pawns on the same horizontal
                         for i in range(y+1, 8):
                             if gametiles[i][x].pieceonTile and gametiles[i][x].pieceonTile.tostring().lower()=='p':
@@ -427,6 +416,22 @@ class AI:
                         for dy in [-1, 0, 1]:
                             if 0 <= y+dy < 8 and (not gametiles[y+dy][x].pieceonTile or gametiles[y+dy][x].pieceonTile.tostring().lower() !='p'):
                                 value -=100 if piece.islower() else 100
+
+                    #for castling
+                    if piece == 'K' and (x, y) == (4, 7):  # White side
+                    #if the castling is still possible
+                        kingside_clear = all(not gametiles[7][i].pieceonTile for i in [5, 6])
+                        queenside_clear = all(not gametiles[7][i].pieceonTile for i in [1, 2, 3])
+    
+                        if kingside_clear or queenside_clear:
+                            value -= 40  #bonus if castling is there but not yet castled-so potential is there incase check is made or something
+
+                    elif piece == 'k' and (x, y) == (4, 0):  # Black side
+                        kingside_clear = all(not gametiles[0][i].pieceonTile for i in [5, 6])
+                        queenside_clear = all(not gametiles[0][i].pieceonTile for i in [1, 2, 3])
+    
+                        if kingside_clear or queenside_clear:
+                            value += 40
 
         return value
     
